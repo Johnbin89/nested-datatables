@@ -1,0 +1,66 @@
+plugins {
+    id 'java-library'
+    id 'idea'
+    id 'application'
+    id "com.github.node-gradle.node" version "3.3.0"
+}
+
+
+node {
+    // Version of node to use.
+    version = '16.15.1'
+
+    // Version of npm to use.
+    npmVersion = '8.19.2'
+
+    // Version of Yarn to use.
+    yarnVersion = '1.3.2'
+
+    // Base URL for fetching node distributions (change if you have a mirror).
+    distBaseUrl = 'https://nodejs.org/dist'
+
+    // If true, it will download node using above parameters.
+    // If false, it will try to use globally installed node.
+    download = true
+
+    // Set the work directory for unpacking node
+    workDir = file("./NodeJS")
+
+    // Set the work directory for NPM
+    npmWorkDir = file("./NodeJS")
+
+    // Set the work directory for Yarn
+    yarnWorkDir = file("./NodeJS")
+
+}
+
+task npmInstallPkg( type:NpmTask ) {
+    group = 'node'
+    description = 'Runs npm install'
+    args = [ 'install' ]
+    //install gets dependencies from package.json and puts them in the folder modules_odin/station_controller_ui_odin/src/main/graphin/node_modules
+}
+
+task npmBuildPkg( type:NpmTask, dependsOn: 'npmInstallPkg' ) {
+    group = 'node'
+    description = 'Runs npm run build'
+    args = [ 'run' , 'build']
+
+    //build creates the folder modules_odin/station_controller_ui_odin/src/main/webapp/graph . This is the production build
+
+}
+
+task npmProd( type:NpmTask, dependsOn: 'npmInstallPkg' ) {
+    group = 'node'
+    description = 'Runs npm prod'
+    args = [  'run' , 'prod' ]
+
+    //run the react server of webpack for development in localhost:8001
+}
+
+
+//processResources.dependsOn 'npmBuildPkg'
+//clean.delete << file('node_modules')
+//clean.delete << file('src/main/resources/static/dist')
+assemble.dependsOn(npmBuildPkg)
+

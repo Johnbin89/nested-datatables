@@ -23,6 +23,10 @@ export default class TableBuilder {
     return this.table;
   }
 
+  getTableId() {
+    return this.tableIdString;
+  }
+
   getIdParser() {
     return this.idParser;
   }
@@ -51,7 +55,7 @@ export default class TableBuilder {
     } else {
       this.tableIdString = this.tableContainerID + 'tab_0';
     }
-
+    console.log("Creating table: "+this.getTableId());
     let tableInHtml = '<div>';
     tableInHtml += this.buildTableContent(data);
     tableInHtml += '</div>';

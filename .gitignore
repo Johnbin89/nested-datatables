@@ -1,7 +1,17 @@
 # Dependency directories
+.gradle
+.idea
 node_modules
+
+
+
+
 
 .DS_Store
 npm-debug.log
 _site
 config.codekit3
+
+#NodeJS
+NodeJS/*
+package-lock.json

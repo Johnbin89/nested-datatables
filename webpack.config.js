@@ -2,6 +2,7 @@ var webpack = require('webpack');
 var path = require('path');
 const webpackMerge = require('webpack-merge');
 const CompressionPlugin = require('compression-webpack-plugin');
+let UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 
 const TARGET = process.env.npm_lifecycle_event;
 console.log("target event is " + TARGET);
@@ -30,7 +31,7 @@ const common = {
         }
       },
       {
-        test: /\.css$/,
+        test: /\.css$/i,
         use: [ 'style-loader', 'css-loader' ]
       },
       {
@@ -57,39 +58,33 @@ if (TARGET === 'build' || !TARGET) {
 }
 
 if (TARGET === 'prod' || !TARGET) {
-  module.exports = webpackMerge(common, {
+
+
+  module.exports = {
+    entry: {
+      'nested.tables': './index.js'
+    },
+    output: {
+      path: path.resolve(__dirname, 'dist'),
+      filename: '[name].min.js',
+      library: 'nestedTables',
+      libraryTarget:'umd',
+      umdNamedDefine: true,
+    },
+    module: {
+      rules: [
+        {
+          test: /\.css$/i,
+          use: [ 'style-loader', 'css-loader' ]
+        },
+        {
+          test: /\.(eot|ttf|svg|gif|png)$/,
+          loader: "url-loader"
+        }
+      ]
+    },
     plugins: [
-      new webpack.optimize.AggressiveMergingPlugin(),
-      new webpack.optimize.OccurrenceOrderPlugin(),
-      new webpack.optimize.UglifyJsPlugin({
-        mangle: true,
-        compress: {
-          warnings: false, // Suppress uglification warnings
-          pure_getters: true,
-          unsafe: true,
-          unsafe_comps: true,
-          screw_ie8: true,
-          conditionals: true,
-          unused: true,
-          comparisons: true,
-          sequences: true,
-          dead_code: true,
-          evaluate: true,
-          if_return: true,
-          join_vars: true,
-        },
-        output: {
-          comments: false,
-        },
-        exclude: [/\.min\.js$/gi], // skip pre-minified libs
-      }),
-      new CompressionPlugin({
-        asset: '[path].gz[query]',
-        algorithm: 'gzip',
-        test: /\.js$|\.css$|\.html$/,
-        threshold: 10240,
-        minRatio: 0,
-      }),
-    ],
-  });
+      new UnminifiedWebpackPlugin()
+    ]
+  };
 }
